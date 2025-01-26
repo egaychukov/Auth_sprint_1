@@ -1,0 +1,84 @@
+services:
+
+  etl-service:
+    build:
+      context: postgres_to_es
+    container_name: etl
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    restart: always
+
+  database:
+    container_name: pg
+    image: postgres:17-alpine
+    env_file:
+      - .env
+    volumes:
+      - ./database_dump.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    expose:
+      - "5432"
+    restart: always
+
+  elasticsearch:
+    container_name: es
+    image: elasticsearch:8.16.0 
+    environment: 
+      - "discovery.type=single-node" 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=false"
+    healthcheck:
+      test: curl -s http://127.0.0.1:9200 >/dev/null || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 15
+    expose:
+      - "9200"
+    restart: always
+    
+  redis: 
+    container_name: redis
+    image: redis:latest
+    expose:
+      - "6379"
+    restart: always
+
+  film-api:
+    build:
+      context: film_api
+    image: film_api
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./film_api/src:/app/src
+    expose:
+     - "8000"
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx_configs:/etc/nginx/conf.d:ro
+    depends_on:
+      database:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    restart: always
