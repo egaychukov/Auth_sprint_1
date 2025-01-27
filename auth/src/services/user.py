@@ -22,11 +22,14 @@ class UserService:
         return await self.db_session.scalar(query)
 
     async def check_password(self, user_id, password: str):
-        query = select(User).filter_by(id=user_id)
-        user = await self.db_session.scalar(query)
+        user = await self.get_by_id(user_id)
         if not user:
             return False
         return user.check_password(password)
+
+    async def get_by_id(self, user_id):
+        query = select(User).filter_by(id=user_id)
+        return await self.db_session.scalar(query)
 
 
 def get_user_service(
