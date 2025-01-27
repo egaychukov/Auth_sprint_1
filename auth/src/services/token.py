@@ -55,7 +55,13 @@ class TokenService:
             settings.jwt_sign_algorithm
         )
 
-    def exists(self, subject: str, token: str) -> bool:
+    def is_access_token_revoked(self, subject: str, token: str) -> bool:
+        return self._exists(subject, token)
+
+    def is_refresh_token_revoked(self, subject, token: str) -> bool:
+        return not self._exists(subject, token)
+
+    def _exists(self, subject: str, token: str) -> bool:
         token = self.token_storage_service.get_token(
             self._get_storage_key(subject, token)
         )
