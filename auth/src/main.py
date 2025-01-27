@@ -31,4 +31,4 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(auth.router, prefix='/api/v1/auth', tags=['auth'])
+app.include_router(auth.router, prefix='/auth', tags=['auth'])
