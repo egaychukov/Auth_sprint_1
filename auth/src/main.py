@@ -10,9 +10,7 @@ from api.v1 import auth, role
 from core.config import settings
 
 
-database_url: str = 'sqlite+aiosqlite://'
-
-engine = create_async_engine(database_url, echo=True)
+engine = create_async_engine(settings.get_connection_string(), echo=True)
 sqlalchemy.async_session = sessionmaker(
     engine, expire_on_commit=False, class_=AsyncSession
 )
@@ -22,8 +20,10 @@ sqlalchemy.async_session = sessionmaker(
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(sqlalchemy.Base.metadata.create_all)
-        redis.redis = Redis(host=settings.token_storage_host, port=settings.token_storage_port)
+    redis.redis = Redis(host=settings.token_storage_host, port=settings.token_storage_port)
+
     yield
+
     await engine.dispose()
     redis.redis.close()
 

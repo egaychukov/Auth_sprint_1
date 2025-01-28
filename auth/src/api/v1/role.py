@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from services.role import RoleService, get_role_service
 from services.user import UserService, get_user_service
 from api.v1.helpers import require
+from models.role import Role
 
 
 router = APIRouter()
@@ -18,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 async def create_role(
         role_title: str,
         role_service: Annotated[RoleService, Depends(get_role_service)],
-        _: Annotated[None, Depends(require('moderator'))]
+        _: Annotated[None, Depends(require(Role.MODERATOR))]
 ):
     try:
         return await role_service.create_role(role_title)
@@ -30,7 +31,7 @@ async def create_role(
 async def remove_role(
         role_id: int,
         role_service: Annotated[RoleService, Depends(get_role_service)],
-        _: Annotated[None, Depends(require('moderator'))]
+        _: Annotated[None, Depends(require(Role.MODERATOR))]
 ):
     if not (await role_service.get_by_id(role_id)):
         raise HTTPException(HTTPStatus.NOT_FOUND)
@@ -47,7 +48,7 @@ async def grant_role(
         role_id: int,
         role_service: Annotated[RoleService, Depends(get_role_service)],
         user_service: Annotated[UserService, Depends(get_user_service)],
-        _: Annotated[None, Depends(require('moderator'))]
+        _: Annotated[None, Depends(require(Role.MODERATOR))]
 ):
     if not (await user_service.get_by_id(user_id)):
         raise HTTPException(HTTPStatus.NOT_FOUND, 'User not found')
@@ -66,7 +67,7 @@ async def revoke_role(
         role_id: int,
         role_service: Annotated[RoleService, Depends(get_role_service)],
         user_service: Annotated[UserService, Depends(get_user_service)],
-        _: Annotated[None, Depends(require('moderator'))]
+        _: Annotated[None, Depends(require(Role.MODERATOR))]
 ):
     if not (await user_service.get_by_id(user_id)):
         raise HTTPException(HTTPStatus.NOT_FOUND, 'User not found')
