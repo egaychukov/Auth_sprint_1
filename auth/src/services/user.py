@@ -1,9 +1,10 @@
-from typing import Annotated, Coroutine, Any
+from typing import Annotated
 
 from fastapi import Depends
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.sqlalchemy import get_session, AsyncSession, User
+from db.sqlalchemy import get_session, User
 from models.user import UserCreateRequest
 
 

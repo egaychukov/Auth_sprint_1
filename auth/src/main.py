@@ -6,8 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from redis import Redis
 
 from db import sqlalchemy, redis
-from api.v1 import auth
+from api.v1 import auth, role
 from core.config import settings
+from api.middleware.role import CheckEntitiesMiddleware
 
 
 database_url: str = 'sqlite+aiosqlite://'
@@ -35,3 +36,4 @@ app = FastAPI(
 )
 
 app.include_router(auth.router, prefix='/auth', tags=['auth'])
+app.include_router(role.router, prefix='/role', tags=['role'])
