@@ -8,7 +8,6 @@ from redis import Redis
 from db import sqlalchemy, redis
 from api.v1 import auth, role
 from core.config import settings
-from api.middleware.role import CheckEntitiesMiddleware
 
 
 database_url: str = 'sqlite+aiosqlite://'

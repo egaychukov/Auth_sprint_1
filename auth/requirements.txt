@@ -9,3 +9,4 @@ aiosqlite==0.20.0
 python-jose[cryptography]==3.3.0
 redis==5.0.4
 psycopg2-binary==2.9.10
+aiohttp==3.11.11

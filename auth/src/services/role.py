@@ -44,6 +44,10 @@ class RoleService:
         query = select(Role).filter_by(id=role_id)
         return await self.db_session.scalar(query)
 
+    async def get_by_title(self, role_title: str):
+        query = select(Role).filter_by(title=role_title)
+        return await self.db_session.scalar(query)
+
 
 def get_role_service(
         db_session: Annotated[AsyncSession, Depends(get_session)]
