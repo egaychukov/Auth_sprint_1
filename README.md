@@ -11,5 +11,5 @@ Run tests:
 We utilize the `pytest-watch` package to automatically rerun tests whenever changes are detected
 
 Roles & admin set-up (the order matters):
-1. `docker compose exec auth python admin/admin.py roles-admin` for adding roles to the database
+1. `docker compose exec auth python admin/admin.py setup-roles` for adding roles to the database
 2. `docker compose exec auth python admin/admin.py setup-admin` for creating an initial admin user
