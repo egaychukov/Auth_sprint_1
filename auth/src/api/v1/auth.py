@@ -20,7 +20,7 @@ async def register(
         user_service: Annotated[UserService, Depends(get_user_service)]
 ) -> UserResponse:
     if await user_service.get_by_login(request.login):
-        raise HTTPException(HTTPStatus.BAD_REQUEST, 'The login already exists')
+        raise HTTPException(HTTPStatus.CONFLICT, 'The login already exists')
     return await user_service.create_user(request)
 
 
