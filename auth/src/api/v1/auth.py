@@ -33,7 +33,7 @@ async def login(
 ) -> dict[str, str]:
     user = await user_service.get_by_login(login)
     if not user or not (await user_service.check_password(user.id, password)):
-        raise HTTPException(HTTPStatus.BAD_REQUEST, 'Invalid credentials')
+        raise HTTPException(HTTPStatus.UNAUTHORIZED, 'Invalid credentials')
     return {
         'access_token': token_service.create_access_token(user.id),
         'refresh_token': token_service.create_refresh_token(user.id),
