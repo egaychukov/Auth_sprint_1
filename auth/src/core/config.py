@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     database_name: str = Field(..., alias='POSTGRES_DB')
     database_host: str = Field('database', alias='POSTGRES_HOST')
     database_port: int = Field(5432, alias='POSTGRES_PORT')
+    check_role_url: str = Field('http://auth:8000/role/belongs', alias='CHECK_ROLE_URL')
 
     def get_connection_string(self):
         return f'postgresql+asyncpg://{self.database_user}:{self.database_password}@{self.database_host}/{self.database_name}'

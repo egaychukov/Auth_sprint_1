@@ -26,7 +26,7 @@ def get_user_id(token: Annotated[str, Depends(oauth2_scheme)]):
 
 def require(role: str):
     async def wrapper(user_id: Annotated[str, Depends(get_user_id)]):
-        url = f'http://auth:8000/role/belongs/{user_id}/{role}'
+        url = f'{settings.check_role_url}/{user_id}/{role}'
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status >= HTTPStatus.BAD_REQUEST:
