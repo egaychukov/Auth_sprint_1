@@ -12,4 +12,4 @@ COPY . .
 
 WORKDIR /app/src
 
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn_worker.UvicornWorker", "-b", "0.0.0.0:8000"]
