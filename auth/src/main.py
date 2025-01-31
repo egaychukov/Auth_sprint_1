@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from redis import Redis
+from alembic import command
+from alembic.config import Config
 
 from db import sqlalchemy, redis
 from api.v1 import auth, role
@@ -18,13 +20,13 @@ sqlalchemy.async_session = sessionmaker(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(sqlalchemy.Base.metadata.create_all)
-    redis.redis = Redis(host=settings.token_storage_host, port=settings.token_storage_port)
-
+    redis.redis = Redis(
+        host=settings.token_storage_host,
+        port=settings.token_storage_port
+    )
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
     yield
-
-    await engine.dispose()
     redis.redis.close()
 
 
