@@ -1,0 +1,20 @@
+[
+    {
+        "login": "login1",
+        "password": "pass1",
+        "first_name": "test",
+        "last_name": "admin"
+    },
+    {
+        "login": "login2",
+        "password": "pass1",
+        "first_name": "test",
+        "last_name": "moderator"
+    },
+    {
+        "login": "login3",
+        "password": "pass1",
+        "first_name": "test",
+        "last_name": "subscriber"
+    }
+]

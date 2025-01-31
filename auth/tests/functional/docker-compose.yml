@@ -1,0 +1,51 @@
+services:
+  auth-tokens: 
+    container_name: auth-tokens
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+
+  database:
+    container_name: pg
+    image: postgres:17-alpine
+    env_file:
+      - ../../../.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    expose:
+      - "5432"
+    restart: always
+
+  auth:
+    container_name: auth
+    build: ../../.
+    env_file:
+      - ../../../.env
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ../../src:/app/src
+    ports:
+      - "8000:8000"
+    restart: always
+
+  tests:
+    container_name: tests
+    build:
+      context: ../../
+      dockerfile: ./tests/functional/Dockerfile
+    entrypoint: >
+      sh -c "python3 /app/utils/wait_for_redis.py && ptw"
+    volumes:
+      - ./src:/app/src
+      - ./utils:/app/utils
+    env_file:
+      - ../../../.env
+    depends_on:
+      - auth
+    restart: always
