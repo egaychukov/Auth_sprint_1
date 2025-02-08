@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     elastic_scheme: str = Field('http', alias='ELASTIC_SCHEME')
     default_cache_expiry_in_seconds: int = Field(30, alias='CACHE_EXPIRY_IN_SECONDS')
     es_load_batch_size: int = Field(20, alias='ES_LOAD_BATCH_SIZE')
+    jwt_secret_key: str = Field(..., alias='JWT_SECRET_KEY')
+    jwt_sign_algorithm: str = Field(..., alias='JWT_SIGN_ALGORITHM')
 
 
 settings = Settings()

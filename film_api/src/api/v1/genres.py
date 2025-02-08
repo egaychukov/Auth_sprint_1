@@ -7,6 +7,8 @@ from .desc import desc
 from models.genre import Genre
 from models.common import ListRequest
 from services.genre import GenreService, get_genre_service
+from auth.auth import security_jwt
+
 
 router = APIRouter()
 
@@ -14,7 +16,8 @@ router = APIRouter()
 @router.get('/{genre_id}', response_model=Genre, description=desc['genres']['get_genre_by_id'])
 async def get_genre_by_id(
     genre_id: str,
-    genre_service: Annotated[GenreService, Depends(get_genre_service)]
+    genre_service: Annotated[GenreService, Depends(get_genre_service)],
+    _: Annotated[dict, Depends(security_jwt)]
 ) -> Genre:
     genre = await genre_service.get_genre_by_id(genre_id)
     if not genre:
@@ -28,7 +31,8 @@ async def get_genre_by_id(
 @router.get('/', response_model=list[Genre], description=desc['genres']['get_genres'])
 async def get_genres(
     request: Annotated[ListRequest, Query()],
-    genre_service: Annotated[GenreService, Depends(get_genre_service)]
+    genre_service: Annotated[GenreService, Depends(get_genre_service)],
+    _: Annotated[dict, Depends(security_jwt)]
 ) -> list[Genre]:
     if request.sort and not genre_service.validate_request(request):
         raise HTTPException(
