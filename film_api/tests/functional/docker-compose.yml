@@ -1,0 +1,53 @@
+services:
+  elasticsearch:
+    container_name: es
+    image: elasticsearch:8.16.0 
+    environment: 
+      - "discovery.type=single-node" 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=false"
+    healthcheck:
+      test: curl -s http://127.0.0.1:9200 >/dev/null || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 15
+    ports:
+      - "9200:9200"
+    restart: always
+    
+  redis: 
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+
+  film-api:
+    build: ../../.
+    env_file:
+      - ../../../.env
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ../../src:/app/src
+    ports:
+      - "8000:8000"
+    restart: always
+
+  tests:
+    build:
+      context: .
+      dockerfile: ../../Dockerfile
+    entrypoint: >
+      sh -c "python3 /app/utils/wait_for_es.py \
+      && python3 /app/utils/wait_for_redis.py \
+      && ptw"
+    volumes:
+      - ./src:/app/src
+      - ./utils:/app/utils
+    env_file:
+      - ../../../.env
+    depends_on:
+      - film-api
+    restart: always
